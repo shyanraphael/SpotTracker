@@ -105,6 +105,9 @@ It is a static site, so any static host works. With Netlify:
 3. In the Spotify dashboard add your site address as a redirect URI, with `https://` and a trailing slash,
    for example `https://your-site.netlify.app/`.
 
+**Vercel** works the same way: import the repo at https://vercel.com/new (it detects Vite on its own), add
+`VITE_SPOTIFY_CLIENT_ID` under Environment Variables, and deploy.
+
 Every push to `main` then redeploys automatically. GitHub Pages is not a good fit unless you use a custom domain,
 because the app expects to live at the root of its address.
 
