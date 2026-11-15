@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T12:00:00Z",
+  "title": "Design System: Spotify Tracker",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#0a0d0b", "tonalRamp": ["#050706", "#0a0d0b", "#121813", "#1b231d", "#2e3b31", "#9db0a2", "#cfe0d3", "#f1f7f2"] },
+      "paper": { "role": "neutral", "displayName": "Paper (light ground)", "canonical": "#f2f6f2", "tonalRamp": ["#526257", "#7d8c81", "#a9b5ac", "#c9d3cb", "#e3eae4", "#f2f6f2", "#f8fbf8", "#ffffff"] },
+      "accent": { "role": "primary", "displayName": "Spotify Green", "canonical": "#1ed760", "tonalRamp": ["#04140a", "#0b4a22", "#087a34", "#12a548", "#1ed760", "#5fe68d", "#a4f2bd", "#dbfbe6"] },
+      "accent-text-light": { "role": "primary", "displayName": "Forest (green text on paper)", "canonical": "#087a34", "tonalRamp": ["#04140a", "#073d1b", "#065a27", "#087a34", "#12a548", "#4fc47a", "#9be0b5", "#d7f5e2"] },
+      "electric-violet": { "role": "secondary", "displayName": "Electric Violet", "canonical": "#8b6bff", "tonalRamp": ["#1f1250", "#38238f", "#5238cc", "#6b4af0", "#8b6bff", "#a98fff", "#c9b8ff", "#e9e1ff"] },
+      "lime": { "role": "tertiary", "displayName": "Lime", "canonical": "#d6ff5a", "tonalRamp": ["#2f3d05", "#587009", "#85a30f", "#aad126", "#d6ff5a", "#e0ff85", "#ecffb0", "#f7ffdc"] },
+      "hot-pink": { "role": "tertiary", "displayName": "Hot Pink", "canonical": "#ff4d8d", "tonalRamp": ["#44091f", "#7d1138", "#b8194f", "#e5266f", "#ff4d8d", "#ff7aa9", "#ffa8c6", "#ffd6e4"] },
+      "text": { "role": "neutral", "displayName": "Bill White", "canonical": "#f1f7f2", "tonalRamp": ["#1b231d", "#526257", "#7d8c81", "#9db0a2", "#cfe0d3", "#e3eee5", "#f1f7f2", "#fafdfa"] },
+      "muted": { "role": "neutral", "displayName": "Back-Row Sage", "canonical": "#9db0a2", "tonalRamp": ["#1b231d", "#2e3b31", "#43544a", "#5f7165", "#7d8c81", "#9db0a2", "#bccbc0", "#dbe5de"] }
+    },
+    "themes": {
+      "attribute": "data-theme on :root, values dark and light",
+      "persistence": "localStorage key st.theme; defaults to prefers-color-scheme; applied before first paint by an inline script in index.html",
+      "dark": { "ink": "#0a0d0b", "ink-2": "#121813", "ink-3": "#1b231d", "text": "#f1f7f2", "text-2": "#cfe0d3", "muted": "#9db0a2", "rule": "rgba(241,247,242,.12)", "rule-2": "rgba(241,247,242,.26)", "accent": "#1ed760", "accent-ink": "#04140a", "accent-text": "#1ed760", "violet": "#8b6bff", "on-violet": "#0a0d0b", "lime": "#d6ff5a", "pink": "#ff4d8d", "warn-text": "undefined (self-referential var)", "err-text": "undefined (self-referential var)" },
+      "light": { "ink": "#f2f6f2", "ink-2": "#ffffff", "ink-3": "#e3eae4", "text": "#0d150f", "text-2": "#2c3b31", "muted": "#526257", "rule": "rgba(13,21,15,.13)", "rule-2": "rgba(13,21,15,.32)", "accent": "#1ed760", "accent-ink": "#04140a", "accent-text": "#087a34", "violet": "#6b4af0", "on-violet": "#ffffff", "lime": "#c4f03a", "pink": "#e5266f", "warn-text": "#6b4700", "err-text": "#8a1240" },
+      "transition": "circular view-transition reveal; instant under reduced motion"
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "View titles and welcome headline, capped at 96px." },
+      "headline": { "displayName": "Headline", "purpose": "Tier titles on the bill." },
+      "title": { "displayName": "Title", "purpose": "Playlist names, panel sections, modal titles." },
+      "body": { "displayName": "Body", "purpose": "Working text in Hanken Grotesk." },
+      "label": { "displayName": "Label", "purpose": "Chips, tags, metadata, sync text." }
+    },
+    "shadows": [
+      { "name": "focus-lift", "value": "0 10px 26px -12px rgba(var(--accent-rgb), .55)", "purpose": "Search field focus." },
+      { "name": "artwork-lift", "value": "0 18px 36px -12px rgba(0,0,0,.6)", "purpose": "Hero and sleeve artwork." },
+      { "name": "overlay", "value": "0 28px 60px rgba(0,0,0,.55)", "purpose": "Sheet and modal." }
+    ],
+    "motion": [
+      { "name": "ease-poster", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "Default easing for reveals, hovers and sliding indicators." },
+      { "name": "ring-spin", "value": "90s linear infinite (70s reverse for the second ring)", "purpose": "Backdrop ring motif; stops under reduced motion." },
+      { "name": "art-slide", "value": "70s / 85s reverse / 100s linear infinite", "purpose": "Playlist art field rows sliding in alternating directions; static under reduced motion." },
+      { "name": "equaliser", "value": "scaleY .2 to 1, .5s to 1.1s alternate", "purpose": "Row and card equalisers animate on hover only; the brand mark and empty state animate while shown." }
+    ],
+    "breakpoints": [
+      { "name": "bill-two-up", "value": "1100px" },
+      { "name": "phone", "value": "860px" },
+      { "name": "narrow", "value": "340px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Green action button that wipes lime on hover.",
+      "html": "<button class=\"ds-cta\">Sync library</button>",
+      "css": ".ds-cta { position: relative; overflow: hidden; isolation: isolate; padding: 14px 24px; background: var(--accent, #1ed760); color: var(--accent-ink, #04140a); font: 700 15px 'Hanken Grotesk', system-ui, sans-serif; border: 0; cursor: pointer; transition: transform .3s cubic-bezier(.16,1,.3,1); } .ds-cta::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--lime, #d6ff5a); transform: translateX(-101%); transition: transform .45s cubic-bezier(.16,1,.3,1); } .ds-cta:hover::before { transform: none; } .ds-cta:active { transform: scale(.97); } .ds-cta:focus-visible { outline: 2px solid var(--accent, #1ed760); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Hairline secondary action.",
+      "html": "<button class=\"ds-ghost\">Open in Spotify</button>",
+      "css": ".ds-ghost { padding: 13px 22px; background: transparent; color: var(--text, #f1f7f2); font: 600 15px 'Hanken Grotesk', system-ui, sans-serif; border: 1px solid var(--rule-2, rgba(241,247,242,.26)); cursor: pointer; transition: background .25s, border-color .25s; } .ds-ghost:hover { background: var(--ink-3, #1b231d); border-color: var(--text, #f1f7f2); } .ds-ghost:focus-visible { outline: 2px solid var(--accent, #1ed760); outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "52px search bar that lights green on focus.",
+      "html": "<label class=\"ds-search\"><input placeholder=\"Find a song\" /></label>",
+      "css": ".ds-search { display: flex; align-items: center; height: 52px; padding: 0 16px; background: var(--ink-2, #121813); border: 1px solid var(--rule, rgba(241,247,242,.12)); color: var(--muted, #9db0a2); transition: border-color .3s, background .3s, box-shadow .4s cubic-bezier(.16,1,.3,1); } .ds-search:focus-within { border-color: var(--accent, #1ed760); background: var(--ink-3, #1b231d); color: var(--text, #f1f7f2); box-shadow: 0 10px 26px -12px rgba(30,215,96,.55); } .ds-search input { width: 100%; background: none; border: 0; outline: none; color: var(--text, #f1f7f2); font: 500 15px 'Hanken Grotesk', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Collection Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Hairline filter chip with a diamond dot; selected fills green.",
+      "html": "<button class=\"ds-chip\"><i></i>Late night</button><button class=\"ds-chip on\"><i></i>All</button>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; background: transparent; border: 1px solid var(--rule, rgba(241,247,242,.12)); color: var(--muted, #9db0a2); font: 600 13.5px 'Hanken Grotesk', system-ui, sans-serif; cursor: pointer; transition: color .25s, border-color .25s; } .ds-chip i { width: 9px; height: 9px; background: var(--violet, #8b6bff); transform: rotate(45deg); } .ds-chip:hover { color: var(--text, #f1f7f2); border-color: var(--rule-2, rgba(241,247,242,.26)); } .ds-chip.on { background: var(--accent, #1ed760); border-color: transparent; color: var(--accent-ink, #04140a); } .ds-chip.on i { background: var(--ink, #0a0d0b); } .ds-chip:focus-visible { outline: 2px solid var(--accent, #1ed760); outline-offset: 2px; }"
+    },
+    {
+      "name": "Rail Nav Item",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Left rail item; active state is a filled green block with accent-ink text and a lime count badge.",
+      "html": "<ul class=\"ds-nav\"><li><button class=\"on\">Library</button></li><li><button>Activity <em>3</em></button></li></ul>",
+      "css": ".ds-nav { list-style: none; padding: 0; margin: 0; width: 196px; } .ds-nav button { display: flex; align-items: center; width: 100%; padding: 12px 14px; background: none; border: 0; color: var(--muted, #9db0a2); font: 600 15px 'Hanken Grotesk', system-ui, sans-serif; cursor: pointer; transition: color .25s; } .ds-nav button:hover { color: var(--text, #f1f7f2); } .ds-nav button.on { background: var(--accent, #1ed760); color: var(--accent-ink, #04140a); } .ds-nav em { margin-left: auto; font-style: normal; font-size: 12px; font-weight: 700; background: var(--lime, #d6ff5a); color: var(--accent-ink, #04140a); padding: 1px 7px; } .ds-nav button:focus-visible { outline: 2px solid var(--accent, #1ed760); outline-offset: 2px; }"
+    },
+    {
+      "name": "Playlist Card",
+      "kind": "card",
+      "refersTo": "card-playlist",
+      "description": "The billing unit: square art with a lime rank chip, display name, muted meta.",
+      "html": "<article class=\"ds-pcard\"><div class=\"ds-art\"><span class=\"ds-rank\">1</span><b>N</b></div><h3>Night Drive</h3><p><strong>312</strong> songs</p></article>",
+      "css": ".ds-pcard { width: 220px; display: flex; flex-direction: column; gap: 14px; padding: 12px; background: var(--ink-2, #121813); border: 1px solid var(--rule, rgba(241,247,242,.12)); color: var(--text, #f1f7f2); cursor: pointer; transition: border-color .3s, background .3s; } .ds-pcard:hover { background: var(--ink-3, #1b231d); border-color: var(--accent, #1ed760); box-shadow: 0 0 0 1px var(--accent, #1ed760); } .ds-art { position: relative; aspect-ratio: 1; display: grid; place-items: center; background: #8b6bff; color: #0a0d0b; } .ds-art b { font: 900 3em 'Big Shoulders Display', 'Arial Narrow', sans-serif; } .ds-rank { position: absolute; left: 0; top: 0; min-width: 44px; padding: 6px 10px 4px; background: var(--lime, #d6ff5a); color: var(--accent-ink, #04140a); font: 900 30px/1 'Big Shoulders Display', 'Arial Narrow', sans-serif; text-align: center; } .ds-pcard h3 { margin: 0; font: 800 24px/.95 'Big Shoulders Display', 'Arial Narrow', sans-serif; text-transform: uppercase; } .ds-pcard p { margin: 6px 0 0; color: var(--muted, #9db0a2); font-size: 13.5px; } .ds-pcard p strong { color: var(--text, #f1f7f2); }"
+    },
+    {
+      "name": "Track Row",
+      "kind": "custom",
+      "refersTo": "card-playlist",
+      "description": "Hairline-divided song row with a leading green diamond marker on hover.",
+      "html": "<div class=\"ds-trow\"><i class=\"ds-mark\"></i><div><b>Midnight City</b><span>M83</span></div><time>4:03</time></div>",
+      "css": ".ds-trow { position: relative; display: grid; grid-template-columns: minmax(0,1fr) 48px; align-items: center; gap: 14px; padding: 9px 12px; border-bottom: 1px solid var(--rule, rgba(241,247,242,.12)); color: var(--text, #f1f7f2); cursor: pointer; transition: background .25s; } .ds-trow:hover { background: var(--ink-2, #121813); } .ds-mark { position: absolute; left: 0; top: 50%; width: 8px; height: 8px; margin-top: -4px; background: var(--accent, #1ed760); transform: rotate(45deg) scale(0); transition: transform .35s cubic-bezier(.16,1,.3,1); } .ds-trow:hover .ds-mark { transform: rotate(45deg) scale(1); } .ds-trow div { display: flex; flex-direction: column; } .ds-trow b { font-weight: 700; } .ds-trow span, .ds-trow time { color: var(--muted, #9db0a2); font-size: 13.5px; } .ds-trow time { text-align: right; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Tags",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Square status tags in neutral and signal tones.",
+      "html": "<span class=\"ds-tag\">Owned</span><span class=\"ds-tag lime\">New</span><span class=\"ds-tag pink\">Removed</span><span class=\"ds-tag violet\">+3</span>",
+      "css": ".ds-tag { display: inline-flex; align-items: center; padding: 3px 9px; background: var(--ink-3, #1b231d); color: var(--text-2, #cfe0d3); font: 700 11.5px 'Hanken Grotesk', system-ui, sans-serif; } .ds-tag.lime { background: var(--lime, #d6ff5a); color: var(--accent-ink, #04140a); } .ds-tag.pink { background: var(--pink, #ff4d8d); color: var(--accent-ink, #04140a); } .ds-tag.violet { background: var(--violet, #8b6bff); color: var(--on-violet, #0a0d0b); }"
+    },
+    {
+      "name": "Theme Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "52px square theme switch beside sync; reveals the new theme as a circular view transition.",
+      "html": "<button class=\"ds-theme\" aria-label=\"Switch theme\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1\"/></svg></button>",
+      "css": ".ds-theme { display: grid; place-items: center; width: 52px; height: 52px; background: var(--ink-2, #121813); border: 1px solid var(--rule, rgba(241,247,242,.12)); color: var(--text, #f1f7f2); cursor: pointer; transition: background .25s, border-color .25s, transform .3s cubic-bezier(.16,1,.3,1); } .ds-theme:hover { background: var(--ink-3, #1b231d); border-color: var(--rule-2, rgba(241,247,242,.26)); } .ds-theme:active { transform: scale(.94); } .ds-theme:focus-visible { outline: 2px solid var(--accent, #1ed760); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Festival Bill",
+    "overview": "The library is a lineup poster. Playlists are billed by size: Headliners lead at poster scale, Main stage follows, Support runs in tight rows, and every big card carries a rank. The ground is near-black with a green cast (or, in the light theme, a pale green-white paper), set with flat colour fields, hairline rules, a faint grain, a drifting dot field and slowly rotating rings. It is a night-time, headphones-on tool, dense where working (track rows) and loud where billing (titles, headliners).\n\nColour has jobs. Spotify green is the action and selection colour, violet marks fields, spines and secondary selection, lime means added or hot, pink means removed. Heads are a condensed poster grotesk in capitals; working text is a small humanist grotesk. Every corner is square; circles appear only as record, ring and avatar geometry. The same system ships in two themes: dark is the default night mode, light is a daylight variant with identical roles and layout.\n\nMotion orients: letters rise out of masks, indicators slide between chips and nav items, cards lean toward the pointer, equaliser bars animate on hover only, counts tick up, and the theme switch reveals the new theme as a circular view transition. All of it stops or settles under reduced motion.",
+    "keyCharacteristics": [
+      "Flat colour fields and hairlines, no glow halos, no gradient text, no glass.",
+      "Square corners everywhere; diamonds and circles as the only accent shapes.",
+      "Poster-scale caps heads against 13-15px working text.",
+      "Colour carries meaning (action, selection, added, removed), never decoration alone.",
+      "Missing artwork prints a flat swatch tile with the initial, so empty states still look billed.",
+      "Two themes from one token set, switched by `data-theme` on the root."
+    ],
+    "rules": [
+      { "name": "The Signal Rule", "body": "Green acts, violet selects, lime adds, pink removes. A bright fill carries the dark Accent Ink (green, lime, pink fills) or `--on-violet` (violet fills), never an unrelated white or black.", "section": "colors" },
+      { "name": "The Two Greens Rule", "body": "Green as a fill is always the accent; green as type or hairline on the page ground is `--accent-text`, which darkens in the light theme. Never set small green text on paper with the fill green.", "section": "colors" },
+      { "name": "The Flat Field Rule", "body": "Colour arrives as solid fields. Gradients exist only as the sticky top scrim, the mask that fades the playlist art field out toward the list, and the tinted wash behind the song sheet; never on text, cards or buttons.", "section": "colors" },
+      { "name": "The Paired Theme Rule", "body": "Every colour is a role token defined in both themes. Components reference tokens, never theme-specific literals, so a surface works in dark and light unchanged.", "section": "colors" },
+      { "name": "The Caps Bill Rule", "body": "Every h1 to h4 is uppercase display type. Body and controls are never uppercase.", "section": "typography" },
+      { "name": "The Soft Lift Rule", "body": "Shadows are blurred and offset-down only; no hard offset shadows.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep every corner square and use diamonds and circles only as accent geometry.",
+      "Do set text on bright fills in Accent Ink (`{colors.accent-ink}`), or `--on-violet` on violet.",
+      "Do use `--accent-text` for green type on the page ground so it passes contrast in light.",
+      "Do define any new colour as a role token in both themes.",
+      "Do let size bill the content: biggest playlists get poster-scale display type and a rank chip.",
+      "Do give every animation a reduced-motion path; ticker, rings, equaliser, disc, art field and count-up all stop or settle.",
+      "Do fall back to a flat swatch tile with an initial when art is missing."
+    ],
+    "donts": [
+      "Don't use glow halos, gradient text, glass or backdrop blur.",
+      "Don't use hard offset shadows; shadows are soft and downward.",
+      "Don't use green fill for anything but action and selection, or lime and pink for anything but added and removed (lime also marks rank).",
+      "Don't set body or control text in the display face, or head text in lowercase.",
+      "Don't cap display type above 96px or let headliners overflow narrow widths.",
+      "Don't hard-code theme-specific hex in components; the disc and banner tints are known exceptions, not precedent."
+    ]
+  }
+}
