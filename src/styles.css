@@ -329,3 +329,5 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 800; text-transform: 
 @keyframes artslide { to { transform: translateX(-50%); } }
 @media (max-width: 860px) { .artfield { height: 380px; } .artrow .tile { width: 108px; height: 108px; } .artrow:nth-child(2) { top: 128px; } .artrow:nth-child(3) { top: 246px; } }
 @media (prefers-reduced-motion: reduce) { .artrow { animation: none !important; } }
+
+.me small.cloud.synced { color: var(--accent-text); } .me small.cloud.error { color: var(--pink); } .me small.cloud.syncing::after { content: ''; display: inline-block; width: 6px; height: 6px; margin-left: 6px; background: var(--accent); transform: rotate(45deg); animation: pulse 1s ease-in-out infinite; }

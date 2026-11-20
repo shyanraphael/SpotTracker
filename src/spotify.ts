@@ -60,7 +60,7 @@ export async function handleRedirect(): Promise<boolean> {
   return true
 }
 
-async function accessToken(): Promise<string> {
+export async function getAccessToken(): Promise<string> {
   let t = loadToken()
   if (!t) throw new Error('Not logged in')
   if (Date.now() >= t.expiresAt) t = await tokenRequest({ grant_type: 'refresh_token', refresh_token: t.refresh })
@@ -74,7 +74,7 @@ export class ApiError extends Error {
 
 async function api<T>(pathOrUrl: string, attempt = 0): Promise<T> {
   const url = pathOrUrl.startsWith('http') ? pathOrUrl : `https://api.spotify.com/v1${pathOrUrl}`
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${await accessToken()}` } })
+  const r = await fetch(url, { headers: { Authorization: `Bearer ${await getAccessToken()}` } })
   if (r.status === 429 && attempt < 5) {
     const wait = (Number(r.headers.get('Retry-After')) || 2) * 1000
     await new Promise((s) => setTimeout(s, wait))

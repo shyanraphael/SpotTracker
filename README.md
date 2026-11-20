@@ -111,6 +111,24 @@ It is a static site, so any static host works. With Netlify:
 Every push to `main` then redeploys automatically. GitHub Pages is not a good fit unless you use a custom domain,
 because the app expects to live at the root of its address.
 
+## Sync folders across devices
+
+Your Spotify library always comes from Spotify, but collections (folders) are yours, so they are saved in a small
+database and follow you to every device where you log in with the same Spotify account.
+
+How it works: `api/sync.js` is a serverless function. The browser sends its Spotify token, the function asks Spotify
+who it belongs to, and it reads or writes only that person's record. It stores a Redis record per Spotify user id.
+
+To turn it on for your own deployment:
+
+1. In Vercel open your project, go to **Storage**, and create an **Upstash Redis** database (free plan). Connect it
+   to the project for Production and Preview. This adds `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
+   (or the `KV_REST_API_*` equivalents) as environment variables automatically.
+2. Redeploy. The account area in the app then shows "Synced across devices".
+
+Without that database the app still works. It simply keeps folders on the current device ("Saved on this device"),
+and the same happens when you run `npm run dev` locally. If two devices change folders at the same time, both sets are kept.
+
 ## How sync works
 
 - The first sync reads all playlists plus Liked Songs. Later syncs only refetch playlists whose `snapshot_id` changed.

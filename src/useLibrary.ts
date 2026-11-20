@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { kvClear, kvGet, kvSet } from './db'
 import * as sp from './spotify'
+import { cloudGet, cloudPut, mergeCollections } from './cloud'
+import type { CloudDoc } from './cloud'
 import { makeDemo } from './demo'
 import type { Activity, Collection, Me, Playlist, SyncState, Track } from './types'
 
 type TrackMap = Record<string, Track[]>
+type CloudState = 'off' | 'syncing' | 'synced' | 'error'
+interface CloudMeta { lastSeen: number; dirty: boolean }
 interface Cache { me: Me | null; playlists: Playlist[]; tracks: TrackMap; activity: Activity[]; lastSync: number }
 
 const LIKED = 'liked'
@@ -28,7 +32,14 @@ export function useLibrary() {
   const [lastSync, setLastSync] = useState(0)
   const [collections, setCollections] = useState<Collection[]>([])
   const [sync, setSync] = useState<SyncState>({ running: false, done: 0, total: 0, label: '' })
+  const [cloud, setCloud] = useState<CloudState>('off')
   const busy = useRef(false)
+  const colsRef = useRef<Collection[]>([])
+  const demoRef = useRef(false)
+  const verRef = useRef(0)
+  const pushTimer = useRef<ReturnType<typeof setTimeout>>()
+  const cloudBusy = useRef(false)
+  demoRef.current = demo
 
   // initial load: cache + collections, then finish a pending OAuth redirect
   useEffect(() => {
@@ -39,6 +50,7 @@ export function useLibrary() {
         const demoOnly = (c: Collection) => c.playlistIds.length > 0 && c.playlistIds.every((id) => /^p\d+$/.test(id) || id === 'liked')
         const clean = cols.filter((c) => !demoOnly(c) && c.id !== 'c1' && c.id !== 'c2')
         if (clean.length !== cols.length) void kvSet('collections', clean)
+        colsRef.current = clean
         setCollections(clean)
       }
       const c = await kvGet<Cache>('cache')
@@ -49,7 +61,80 @@ export function useLibrary() {
     })()
   }, [])
 
-  const persistCollections = (next: Collection[]) => { setCollections(next); if (!demo) void kvSet('collections', next) }
+  // ---- cross-device sync of collections (see api/sync.js) ----
+  const readMeta = async (): Promise<CloudMeta> => (await kvGet<CloudMeta>('cloudMeta')) ?? { lastSeen: 0, dirty: false }
+
+  const adopt = async (doc: CloudDoc, dirty: boolean) => {
+    colsRef.current = doc.collections
+    setCollections(doc.collections)
+    await kvSet('collections', doc.collections)
+    await kvSet('cloudMeta', { lastSeen: doc.updatedAt, dirty })
+  }
+
+  /** Saves local folders to the cloud. Returns true when the cloud now matches this device. */
+  const push = async (): Promise<boolean> => {
+    if (demoRef.current || !sp.isLoggedIn()) return false
+    const startVer = verRef.current
+    let meta = await readMeta()
+    let res = await cloudPut(colsRef.current, meta.lastSeen)
+    if (!res.ok && res.reason === 'conflict') {
+      // another device saved first: keep both sets of folders, then save the combination
+      const merged = mergeCollections(res.doc.collections, colsRef.current)
+      await adopt({ collections: merged, updatedAt: res.doc.updatedAt }, true)
+      meta = { lastSeen: res.doc.updatedAt, dirty: true }
+      res = await cloudPut(colsRef.current, meta.lastSeen)
+    }
+    if (res.ok) {
+      const stillDirty = verRef.current !== startVer
+      await kvSet('cloudMeta', { lastSeen: res.doc.updatedAt, dirty: stillDirty })
+      if (stillDirty) schedulePush()
+      return true
+    }
+    setCloud(res.reason === 'off' ? 'off' : 'error')
+    return false
+  }
+
+  const pushNow = async () => {
+    if (cloudBusy.current) { schedulePush(); return }
+    cloudBusy.current = true
+    setCloud('syncing')
+    try { if (await push()) setCloud('synced') } finally { cloudBusy.current = false }
+  }
+  const schedulePush = () => { clearTimeout(pushTimer.current); pushTimer.current = setTimeout(() => void pushNow(), 700) }
+
+  const pullCloud = useCallback(async () => {
+    if (demoRef.current || !sp.isLoggedIn() || cloudBusy.current) return
+    cloudBusy.current = true
+    setCloud('syncing')
+    try {
+      const res = await cloudGet()
+      if (!res.ok) { setCloud(res.reason === 'off' ? 'off' : 'error'); return }
+      const meta = await readMeta()
+      const doc = res.doc
+      const local = colsRef.current
+      let ok = true
+      if (doc.updatedAt === 0) {
+        // nothing in the cloud yet: this device's folders become the shared copy
+        if (local.length) ok = await push()
+      } else if (doc.updatedAt > meta.lastSeen) {
+        if (meta.dirty || (meta.lastSeen === 0 && local.length)) {
+          await adopt({ collections: mergeCollections(doc.collections, local), updatedAt: doc.updatedAt }, true)
+          ok = await push()
+        } else await adopt(doc, false)
+      } else if (meta.dirty) ok = await push()
+      if (ok) setCloud('synced')
+    } finally { cloudBusy.current = false }
+  }, [])
+
+  const persistCollections = (next: Collection[]) => {
+    colsRef.current = next
+    setCollections(next)
+    if (demo) return
+    verRef.current++
+    void kvSet('collections', next)
+    void readMeta().then((m) => kvSet('cloudMeta', { ...m, dirty: true }))
+    schedulePush()
+  }
 
   const runSync = useCallback(async () => {
     if (busy.current || !sp.isLoggedIn()) return
@@ -132,21 +217,26 @@ export function useLibrary() {
   }, [])
 
   // auto-sync after login, and when the tab regains focus (if it has been a while)
-  useEffect(() => { if (ready && authed && !demo) void runSync() }, [ready, authed, demo, runSync])
+  useEffect(() => { if (ready && authed && !demo) { void runSync(); void pullCloud() } }, [ready, authed, demo, runSync, pullCloud])
   useEffect(() => {
-    const onVis = () => { if (document.visibilityState === 'visible' && authed && !demo && Date.now() - lastSync > 5 * 60_000) void runSync() }
+    const onVis = () => {
+      if (document.visibilityState !== 'visible' || !authed || demo) return
+      void pullCloud() // pick up folder changes made on another device
+      if (Date.now() - lastSync > 5 * 60_000) void runSync()
+    }
     document.addEventListener('visibilitychange', onVis)
     return () => document.removeEventListener('visibilitychange', onVis)
-  }, [authed, demo, lastSync, runSync])
+  }, [authed, demo, lastSync, runSync, pullCloud])
 
   const startDemo = () => {
     const d = makeDemo()
+    demoRef.current = true
     setDemo(true); setMe(d.me); setPlaylists(d.playlists); setTracks(d.tracks); setActivity(d.activity); setLastSync(Date.now())
     setCollections(d.collections)
   }
   const signOut = async () => {
     sp.logout(); setAuthed(false); setDemo(false); setMe(null); setPlaylists([]); setTracks({}); setActivity([]); setLastSync(0)
-    await kvClear(); setCollections([])
+    await kvClear(); colsRef.current = []; setCollections([])
   }
 
   const saveCollection = (c: Collection) =>
@@ -164,7 +254,7 @@ export function useLibrary() {
 
   const isAuthed = demo || authed
   return {
-    ready, isAuthed, demo, me, playlists, tracks, activity, lastSync, collections, sync,
+    ready, isAuthed, demo, me, playlists, tracks, activity, lastSync, collections, sync, cloud,
     runSync, startDemo, signOut, saveCollection, deleteCollection, togglePlaylistIn, newCollection, setAllCollections,
   }
 }

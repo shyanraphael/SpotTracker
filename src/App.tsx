@@ -177,7 +177,7 @@ function Nav({ view, go, lib }: { view: View; go: (v: View) => void; lib: Librar
       <div className="navfoot">
         <div className="me">
           <Art src={lib.me?.image ?? ''} seed={lib.me?.name ?? 'me'} label={lib.me?.name} radius={0} />
-          <div><b>{lib.me?.name}</b><small>{lib.demo ? 'Demo data' : 'Connected'}</small></div>
+          <div><b>{lib.me?.name}</b><small className={`cloud ${lib.demo ? '' : lib.cloud}`}>{lib.demo ? 'Demo data' : ({ off: 'Saved on this device', syncing: 'Syncing folders…', synced: 'Synced across devices', error: 'Sync problem, will retry' } as const)[lib.cloud]}</small></div>
         </div>
         <button className="ghost" onClick={() => void lib.signOut()} title="Sign out" aria-label="Sign out"><Icon.Out size={18} /></button>
       </div>
